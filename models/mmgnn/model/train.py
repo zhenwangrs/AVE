@@ -103,6 +103,12 @@ def train():
 
                 torch.cuda.empty_cache()
             logger.info(f'epoch loss: {epoch_loss / index}')
+            if epoch % config.train.test_freq == 0 and epoch >= config.train.start_test_epoch:
+                acc = test(model, config, split='val', test_loader=test_loader)
+                if acc > best_acc:
+                    best_acc = acc
+                    torch.save(model.state_dict(), f'./ckp/model_best.pth')
+                logger.info(f'best acc: {best_acc}')
 
             scheduler.step()
 
