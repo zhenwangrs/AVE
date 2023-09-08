@@ -166,7 +166,6 @@ def test(model, config, split='test', test_loader=None):
         f'{split} total correct: {total_correct}, total: {total_qa}, acc: {total_correct / total_qa}')
 
     def post_process_1(pred_list):
-        # 取出数组中非0的最多的那个数字，将所有非0的数字替换为这个数字
         pred_list = np.array(pred_list)
         nonzero_pred_list = pred_list[pred_list != 0]
         if len(nonzero_pred_list) == 0:
@@ -180,45 +179,6 @@ def test(model, config, split='test', test_loader=None):
                 pred_list[i] = pred_category
         return pred_list
 
-    def post_process_2(pred_list):
-        # 取出数组中非0的最多的那个数字，将所有非0的数字替换为这个数字
-        pred_list = np.array(pred_list)
-        nonzero_pred_list = pred_list[pred_list != 0]
-        if len(nonzero_pred_list) == 0:
-            return pred_list
-        count = np.bincount(nonzero_pred_list)
-        pred_category = np.argmax(count)
-        num = np.sum(count == count[pred_category])
-        # if num == 1:
-        for i in range(len(pred_list)):
-            if pred_list[i] != 0:
-                pred_list[i] = pred_category
-        # else:
-        #     print(f'num: {num}, count: {count}, pred_category: {pred_category}')
-
-        # 遍历数组，遇到第一个非0的数字，将其后面的数字全部替换为这个数字，直到遇到下一个0
-        # 找到第一个非0的数字的下标
-        first_nonzero_index = -1
-        for i in range(len(pred_list)):
-            if pred_list[i] != 0:
-                first_nonzero_index = i
-                break
-        if first_nonzero_index == -1:
-            return pred_list
-        # 找到最后一个非0的数字的下标
-        last_nonzero_index = -1
-        for i in range(len(pred_list) - 1, -1, -1):
-            if pred_list[i] != 0:
-                last_nonzero_index = i
-                break
-        if last_nonzero_index == -1:
-            return pred_list
-        # 将第一个非0的数字后面的数字全部替换为pred_category
-        for i in range(first_nonzero_index, last_nonzero_index + 1):
-            pred_list[i] = pred_category
-        return pred_list
-
-    # 计算准确率
     total_correct = 0
     total_qa = 0
     for vid, record in answer_record.items():
@@ -229,24 +189,6 @@ def test(model, config, split='test', test_loader=None):
             correct_list.append(frame['correct_ans_index'].item())
             pred_list.append(frame['pred_ans_index'].item())
         pred_list = post_process_1(pred_list)
-        for i in range(len(pred_list)):
-            total_qa += 1
-            if pred_list[i] == correct_list[i]:
-                total_correct += 1
-    acc = total_correct / total_qa
-    logger.info(f'{split} total correct: {total_correct}, total: {total_qa}, acc: {acc}')
-
-    # 计算准确率
-    total_correct = 0
-    total_qa = 0
-    for vid, record in answer_record.items():
-        correct_list = []
-        pred_list = []
-        frames = sorted(record, key=lambda x: x['frame_id'])
-        for frame in frames:
-            correct_list.append(frame['correct_ans_index'].item())
-            pred_list.append(frame['pred_ans_index'].item())
-        pred_list = post_process_2(pred_list)
         for i in range(len(pred_list)):
             total_qa += 1
             if pred_list[i] == correct_list[i]:
