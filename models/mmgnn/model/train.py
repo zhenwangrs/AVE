@@ -63,7 +63,7 @@ def train():
                                   collate_fn=train_dataset.collate_fn,
                                   drop_last=True)
 
-        test_dataset = AVEDataset(config, model.tokenizer, model.image_processor, 'test')
+        test_dataset = AVEDataset(config, model.tokenizer, model.image_processor, 'val')
         test_loader = DataLoader(test_dataset,
                                  batch_size=32,
                                  shuffle=False,
@@ -101,28 +101,13 @@ def train():
                     logger.info(f'epoch: {epoch}, batch: {index}, loss: {loss.item()}, cls_loss: {cls_loss.item()}, '
                                 f'cosine_loss: {cosine_loss.item()}, clip_loss: {clip_loss.item()}, epoch_loss: {epoch_loss / index}')
 
-                if index % (len(train_loader) // 10) == 0 and epoch >= config.train.start_test_epoch:
-                    acc = test(model, config, split='test', test_loader=test_loader)
-                    if acc > best_acc:
-                        best_acc = acc
-                        torch.save(model.state_dict(), f'./ckp/model_best.pth')
-                    logger.info(f'best acc: {best_acc}')
-
                 torch.cuda.empty_cache()
             logger.info(f'epoch loss: {epoch_loss / index}')
-            # if epoch % config.train.save_freq == 0 and epoch >= config.train.start_save_epoch:
-            #     torch.save(model.state_dict(), f'./ckp/model_{epoch}.pth')
-            # if epoch % config.train.test_freq == 0 and epoch >= config.train.start_test_epoch:
-            #     acc = test(model, config, split='test', test_loader=test_loader)
-            #     if acc > best_acc:
-            #         best_acc = acc
-            #         torch.save(model.state_dict(), f'./ckp/model_best.pth')
-            #     logger.info(f'best acc: {best_acc}')
 
             scheduler.step()
 
     logger.info('testing ...')
-    model.load_state_dict(torch.load(f'./ckp/model_best_82.9.pth'), strict=False)
+    model.load_state_dict(torch.load(f'./ckp/model_best.pth'), strict=False)
     test(model, config, split='test')
 
 
