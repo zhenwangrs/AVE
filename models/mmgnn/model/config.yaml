@@ -21,37 +21,6 @@ model:
   pretrained_audio_mae_path: 'D:/dataset/AVE_Dataset/audiomae.pth'
   pretrained_vig_path: 'D:/dataset/AVE_Dataset/vig_b_82.6.pth'
 
-  mask_ratio: 0.8
-  norm_pix_loss: False # Use (per-patch) normalized pixels as targets for computing loss
-  in_channels: 1
-  audio_exp: True
-  alpha: 0 # contrastive loss weight
-  omega: 1 # reconstruction loss weight
-  mode: 0 # contrastive mode
-  decoder_mode: 0 # decoder mode 0: global attn 1: swined local attn
-  use_custom_patch: False # use custom patch and override timm PatchEmbed
-  split_pos: False # use splitted pos emb
-  pos_trainable: False
-  use_nce: False
-  load_video: False
-  mask_2d: False # use 2d masking
-  mask_t_prob: 0.7 # ratio of masking time
-  mask_f_prob: 0.3 # ratio of masking frequency
-  no_shift: False
-
-  select_num: 10
-  fix_select: True
-  answer_types: 29
-  lstm_layers: 4
-  dropout: 0.0
-
-  finetune:
-    image_mae: False
-    image_mae_proj: True
-    audio_mae: False
-    audio_mae_proj: True
-    clip_text: False
-    clip_text_proj: False
 
 train:
   visible_gpu: '0'
