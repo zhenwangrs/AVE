@@ -98,12 +98,18 @@ class AVE_Model_TF(nn.Module):
         selected_fusion_feats_2 = torch.cat([selected_fusion_feats[1:], selected_fusion_feats[:1]], dim=0)
         inter_cosine_loss = self.cosine_loss_fn(selected_fusion_feats, selected_fusion_feats_2, torch.tensor([-1] * selected_fusion_feats.shape[0]).to(selected_fusion_feats.device))
 
+        # fusion feat inter-class align
+        selected_labels = self.sample_unique_labels(labels)
+        selected_fusion_feats = torch.stack([fusion_feats[i] for i in selected_labels], dim=0)
+        selected_fusion_feats_2 = torch.cat([selected_fusion_feats[1:], selected_fusion_feats[:1]], dim=0)
+        cosine_loss = self.cosine_loss_fn(selected_fusion_feats, selected_fusion_feats_2, torch.tensor([-1] * selected_fusion_feats.shape[0]).to(selected_fusion_feats.device))
+        # cosine_loss = torch.tensor(0.0).to(cls_loss.device)
+
         fusion_feats = torch.cat([fusion_feats, audio_feats_mean, frame_feats_mean], dim=1)
         fusion_feats = self.dropout(fusion_feats)
         logits = self.classifier(fusion_feats)
         cls_loss = self.loss_fn(logits, labels)
 
-        cosine_loss = torch.tensor(0.0).to(cls_loss.device)
         av_similarity_labels = torch.tensor([-1.0 if labels[i] == 0 else 1.0 for i in range(len(labels))]).to(cls_loss.device)
         av_cosine_loss = self.cosine_loss_fn(audio_feats_mean, frame_feats_mean, av_similarity_labels) + inter_cosine_loss
 
