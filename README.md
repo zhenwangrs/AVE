@@ -1,3 +1,1 @@
-# AVE
- 
-Here is the code for our paper **MULTIMODAL GRAPH-BASED AUDIO-VISUAL EVENT LOCALIZATION**
+Here is the code for our paper **MULTIMODAL GRAPH-BASED AUDIO-VISUAL EVENT LOCALIZATION** .
