@@ -18,7 +18,6 @@ model:
 #  model_name: 'mae_vit_large_patch16'
 
   audiomae_pretrained_pth_path: 'E:/Research/AVQA/lib/pretrained.pth'
-  pretrained_siammae_path: 'E:/Research/AVQA/models/siammae_pretrain/clip/ckp/model_2.pth'
   pretrained_audio_mae_path: 'D:/dataset/AVE_Dataset/audiomae.pth'
   pretrained_vig_path: 'D:/dataset/AVE_Dataset/vig_b_82.6.pth'
 
